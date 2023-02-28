@@ -2,7 +2,7 @@
 'use strict';
 
 /*
-Description of the available api
+Description of the available api\d2l\home
 GET https://clear-fashion-api.vercel.app/
 
 Search for specific products
@@ -54,7 +54,6 @@ const fetchProducts = async (page = 1, size = 12) => {
       console.error(body);
       return {currentProducts, currentPagination};
     }
-
     return body.data;
   } catch (error) {
     console.error(error);
@@ -128,6 +127,16 @@ const render = (products, pagination) => {
 selectShow.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
 
+  setCurrentProducts(products);
+  render(currentProducts, currentPagination);
+});
+
+/**
+ * Select the number of the page to display
+ */
+selectPage.addEventListener('change', async (event) => {
+
+  const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
