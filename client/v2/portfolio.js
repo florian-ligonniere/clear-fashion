@@ -22,12 +22,15 @@ let currentProducts = [];
 let currentPagination = {};
 let currentBrand = "";
 let AllProducts = [];
+let isRecent = false;
+let isReasonable = false;
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
 const filterRecent = document.querySelector('#filter-recent');
+const filterReasonable = document.querySelector('#filter-reasonable');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -131,6 +134,26 @@ const renderProducts = products => {
   let size = currentPagination.pageSize
   let newarray = [];
   if(products!=undefined){
+    if(isRecent == true){
+      const temporary = [];
+      currentProducts.forEach(item =>{
+        let diffTime = Math.abs(new Date() - new Date(item.released));
+        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if(diffDays<=14){
+          temporary.push(item);
+        }
+      });
+      products=temporary;
+    }
+    if(isReasonable == true){
+      const temporary = [];
+      currentProducts.forEach(item =>{
+        if(item.price<=50){
+          temporary.push(item);
+        }
+      });
+      products=temporary;
+    }
     for(let i=0; i<size; i++){
       if((page-1)*size+i<currentPagination.count){
         newarray.push(products[(page-1)*size+i]);
@@ -162,14 +185,21 @@ const renderProducts = products => {
  * @param  {Object} pagination
  */
 const renderPagination = pagination => {
-  const {currentPage, pageCount} = pagination;
+  const currentPage = currentPagination.currentPage;
+  const pageCount = Math.floor(currentProducts.length/currentPagination.pageSize)+1;
   const options = Array.from(
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
   ).join('');
 
   selectPage.innerHTML = options;
-  selectPage.selectedIndex = currentPage - 1;
+  if(currentPage>pageCount){
+    selectPage.selectedIndex = 0;
+    currentPagination.currentPage = 1;
+  }
+  else{
+    selectPage.selectedIndex = currentPage - 1;
+  }
 };
 
 /**
@@ -191,14 +221,14 @@ const renderBrand = brands => {
  * @param  {Object} pagination
  */
 const renderIndicators = pagination => {
-  const {count} = pagination;
+  const {count} = currentProducts.length;
 
   spanNbProducts.innerHTML = count;
 };
 
 const render = (products, pagination) => {
-  renderProducts(products);
   renderPagination(pagination);
+  renderProducts(products);
   renderIndicators(pagination);
 };
 
@@ -210,9 +240,7 @@ const render = (products, pagination) => {
  * Select the number of products to display
  */
 selectShow.addEventListener('change', async (event) => {
-  const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
-
-  setCurrentProducts(products);
+  currentPagination.pageSize = parseInt(event.target.value);
   render(currentProducts, currentPagination);
 });
 
@@ -228,7 +256,6 @@ selectPage.addEventListener('change', async (event) => {
  * Select the brand to display
  */
 selectBrand.addEventListener('change', async (event) => {
-  const products = await fetchProductsByBrand(currentPagination.currentPage, currentPagination.pageSize, event.target.value);
 
   if(event.target.value == ' '){
     currentProducts = AllProducts;
@@ -251,23 +278,27 @@ selectBrand.addEventListener('change', async (event) => {
  */
 filterRecent.addEventListener('change', async (event) => {
   if(event.target.value == "Yes"){
-    const newProducts = [];
-    currentProducts.forEach(item =>{
-      let diffTime = Math.abs(new Date() - new Date(item.released));
-      let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      if(diffDays<=150){
-        newProducts.push(item);
-      }
-  })
-  console.log(newProducts);
-    currentProducts = newProducts;
-    render(currentProducts, currentPagination);
+    isRecent = true;
   }
   else{
-    currentProducts = AllProducts;
-    render(currentProducts, currentPagination);
+    isRecent=false;
   }
+  render(currentProducts, currentPagination);
 });
+
+/**
+ * Filter by recently realesed
+ */
+filterReasonable.addEventListener('change', async (event) => {
+  if(event.target.value == "Yes"){
+    isReasonable = true;
+  }
+  else{
+    isReasonable=false;
+  }
+  render(currentProducts, currentPagination);
+});
+
 
 
 
