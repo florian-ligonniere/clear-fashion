@@ -31,6 +31,7 @@ const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
 const filterRecent = document.querySelector('#filter-recent');
 const filterReasonable = document.querySelector('#filter-reasonable');
+const sorting = document.querySelector('#sort');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -287,7 +288,7 @@ filterRecent.addEventListener('change', async (event) => {
 });
 
 /**
- * Filter by recently realesed
+ * Filter by reasonable price
  */
 filterReasonable.addEventListener('change', async (event) => {
   if(event.target.value == "Yes"){
@@ -295,6 +296,27 @@ filterReasonable.addEventListener('change', async (event) => {
   }
   else{
     isReasonable=false;
+  }
+  render(currentProducts, currentPagination);
+});
+
+const sort_price_low_high = products =>{
+  return products.sort((a,b) => a.price - b.price)
+};
+
+const sort_price_high_low = products =>{
+  return products.sort((a,b) => b.price - a.price)
+};
+
+/**
+ * Sorting the results
+ */
+sorting.addEventListener('change', async (event) => {
+  if(event.target.value == "price-asc"){
+    currentProducts = sort_price_low_high(currentProducts);
+  }
+  else if(event.target.value == "price-desc"){
+    currentProducts = sort_price_high_low(currentProducts);
   }
   render(currentProducts, currentPagination);
 });
