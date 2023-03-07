@@ -19,11 +19,13 @@ Search for available brands list
 
 // current products on the page
 let currentProducts = [];
+let favoriteProducts = [];
 let currentPagination = {};
 let currentBrand = "";
 let AllProducts = [];
 let isRecent = false;
 let isReasonable = false;
+let onlyFavorite = false;
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -39,6 +41,7 @@ const spanP50 = document.querySelector('#p50');
 const spanP90 = document.querySelector('#p90');
 const spanP95 = document.querySelector('#p95');
 const spanLast_released = document.querySelector('#last-released');
+const showFavorite = document.querySelector('#show-favorite');
 
 /**
  * Set global value
@@ -150,6 +153,54 @@ const last_released = () =>{
   }
 }
 
+const getFavortite = () =>{
+  const favoriteProductsJSON = localStorage.getItem('favoriteProducts');
+  const newfavoriteProducts = JSON.parse(favoriteProductsJSON);
+  return newfavoriteProducts;
+};
+
+function saveFavorite(uuid_product){
+  favoriteProducts = getFavortite();
+  if(favoriteProducts == undefined){
+    favoriteProducts = [];
+  }
+  let exists = false;
+  favoriteProducts.forEach(item=>{
+    if(item.uuid == uuid_product){
+      exists = true;
+    }
+  })
+  if(exists == false){
+    let searched_prod;
+    AllProducts.forEach(item=>{
+      if(item.uuid==uuid_product){
+        favoriteProducts.push(searched_prod = item);
+      }
+    });
+    const favoriteProductsJSON = JSON.stringify(favoriteProducts);
+    localStorage.setItem('favoriteProducts', favoriteProductsJSON);
+  }
+}
+
+function deleteFavorite(uuid_product){
+  favoriteProducts = getFavortite();
+  if(favoriteProducts == undefined){
+    favoriteProducts = [];
+  }
+  else{
+    favoriteProducts.forEach((item, index)=>{
+      if(item.uuid == uuid_product){
+        favoriteProducts.splice(index, index);
+      }
+    });
+    const favoriteProductsJSON = JSON.stringify(favoriteProducts);
+    localStorage.setItem('favoriteProducts', favoriteProductsJSON);
+  }
+}
+
+//#region Render
+
+
 /**
  * Render list of products
  * @param  {Array} products
@@ -163,6 +214,12 @@ const renderProducts = products => {
   let newarray = [];
   products = AllProducts;
   if(products!=undefined){
+    if(onlyFavorite == true && favoriteProducts != undefined && favoriteProducts.length > 0){
+      products = getFavortite();
+    }
+    else if(onlyFavorite == true && (favoriteProducts == undefined || favoriteProducts.length == 0)){
+      alert("Empty favortite list.")
+    }
     if(currentBrand!=""){
       const temporary = []
       products.forEach(item =>{
@@ -207,6 +264,8 @@ const renderProducts = products => {
         <span>${product.brand}</span>
         <a href="${product.link}">${product.name}</a>
         <span>${product.price}</span>
+        <button class="favorite" onclick="saveFavorite('${product.uuid}')">Favorite</button>
+        <button class="unfavorite" onclick="deleteFavorite('${product.uuid}')">Unfavorite</button>
       </div>
     `;
       }
@@ -283,6 +342,9 @@ const render = (products, pagination) => {
   renderProducts(currentProducts);
   renderIndicators(pagination);
 };
+
+//#endregion
+
 
 /**
  * Declaration of all Listeners
@@ -375,7 +437,19 @@ sorting.addEventListener('change', async (event) => {
   render(currentProducts, currentPagination);
 });
 
-
+/**
+ * Show only favorite
+ */
+showFavorite.addEventListener('change', async (event) => {
+  if(event.target.value == "Yes"){
+    onlyFavorite = true;
+  }
+  else{
+    onlyFavorite = false;
+    currentProducts = AllProducts;
+  }
+  render(currentProducts, currentPagination);
+});
 
 
 document.addEventListener('DOMContentLoaded', async () => {
