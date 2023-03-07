@@ -308,6 +308,14 @@ const sort_price_high_low = products =>{
   return products.sort((a,b) => b.price - a.price)
 };
 
+const sort_date_new_old = products =>{
+  return products.sort((a,b) => new Date(b.released)- new Date(a.released))
+};
+
+const sort_date_old_new = products =>{
+  return products.sort((a,b) => new Date(a.released)- new Date(b.released))
+};
+
 /**
  * Sorting the results
  */
@@ -317,6 +325,12 @@ sorting.addEventListener('change', async (event) => {
   }
   else if(event.target.value == "price-desc"){
     currentProducts = sort_price_high_low(currentProducts);
+  }
+  else if(event.target.value == "date-asc"){
+    currentProducts = sort_date_new_old(currentProducts);
+  }
+  else if(event.target.value == "date-desc"){
+    currentProducts = sort_date_old_new(currentProducts);
   }
   render(currentProducts, currentPagination);
 });
