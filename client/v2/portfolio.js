@@ -38,6 +38,7 @@ const spanNbNewProducts = document.querySelector('#nbNewProducts');
 const spanP50 = document.querySelector('#p50');
 const spanP90 = document.querySelector('#p90');
 const spanP95 = document.querySelector('#p95');
+const spanLast_released = document.querySelector('#last-released');
 
 /**
  * Set global value
@@ -137,6 +138,16 @@ const pValue = percent =>{
     return 0;
   }
   
+}
+
+const last_released = () =>{
+  if(currentProducts != undefined && currentProducts.length != 0){
+    const products = sort_date_new_old(currentProducts);
+    return new Date(products[0].released).toISOString().split('T')[0];
+  }
+  else{
+    return "2000-01-01";
+  }
 }
 
 /**
@@ -264,6 +275,7 @@ const renderIndicators = pagination => {
   spanP50.innerHTML = pValue(50);
   spanP90.innerHTML = pValue(90);
   spanP95.innerHTML = pValue(95);
+  spanLast_released.innerHTML = last_released();
 };
 
 const render = (products, pagination) => {
@@ -301,7 +313,7 @@ selectBrand.addEventListener('change', async (event) => {
 });
 
 /**
- * Filter by recently realesed
+ * Filter by recently released
  */
 filterRecent.addEventListener('change', async (event) => {
   if(event.target.value == "Yes"){
