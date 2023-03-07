@@ -34,6 +34,7 @@ const filterReasonable = document.querySelector('#filter-reasonable');
 const sorting = document.querySelector('#sort');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const spanNbNewProducts = document.querySelector('#nbNewProducts');
 
 /**
  * Set global value
@@ -222,9 +223,18 @@ const renderBrand = brands => {
  * @param  {Object} pagination
  */
 const renderIndicators = pagination => {
-  const {count} = currentProducts.length;
-
+  const count = pagination.count;
+  const temporary = [];
+  currentProducts.forEach(item =>{
+    let diffTime = Math.abs(new Date() - new Date(item.released));
+    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if(diffDays<=14){
+      temporary.push(item);
+    }
+  });
+  let count_recent = temporary.length;
   spanNbProducts.innerHTML = count;
+  spanNbNewProducts.innerHTML = count_recent;
 };
 
 const render = (products, pagination) => {
