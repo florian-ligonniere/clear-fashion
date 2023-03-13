@@ -256,6 +256,7 @@ const renderProducts = products => {
         
       }
     }
+    console.log(newarray)
     template = newarray
     .map(product => {
       if(product != undefined){
@@ -274,7 +275,7 @@ const renderProducts = products => {
   }
   div.innerHTML = template;
   fragment.appendChild(div);
-  sectionProducts.innerHTML = '<h2>Products</h2>';
+  sectionProducts.innerHTML = '<h2 class=\"subTitle\">Products</h2>';
   sectionProducts.appendChild(fragment);
 };
 
