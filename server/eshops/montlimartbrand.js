@@ -20,8 +20,8 @@ const parse = data => {
           .find('.product-miniature__pricing .price')
           .text()
       );
-
-      return {name, price};
+      const brand = 'Montlimart'
+      return {brand, name, price};
     })
     .get();
 };
@@ -36,7 +36,6 @@ module.exports.scrape = async url => {
       const response = await fetch(url);
   
       if (response.ok) {
-        console.log('test');
         const body = await response.text();
   
         return parse(body);

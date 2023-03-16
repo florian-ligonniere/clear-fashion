@@ -16,13 +16,15 @@ const parse = data => {
         .text()
         .trim()
         .replace(/\s/g, ' ');
+
       const price = parseInt(
         $(element)
           .find('.productList-price')
           .text()
       );
 
-      return {name, price};
+      const brand = 'Dedicated'
+      return {brand, name, price};
     })
     .get();
 };

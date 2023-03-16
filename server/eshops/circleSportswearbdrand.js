@@ -25,7 +25,8 @@ const parse = data => {
           .replace('€', '')
       );
 
-      return {name, price};
+      const brand = 'Circle SportWear'
+      return {brand, name, price};
     })
     .get();
 };
