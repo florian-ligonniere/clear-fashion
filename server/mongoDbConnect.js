@@ -18,7 +18,7 @@ const dbUpdate = async (products) => {
 const fs = require('fs');
 
 // Read the JSON file
-const json_string = fs.readFileSync('productsBrands.json', 'utf8', (err) => {
+const json_string = fs.readFileSync('products.json', 'utf8', (err) => {
   if (err) {
     console.error(err);
     return;
